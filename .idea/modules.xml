@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/VP_HCI.iml" filepath="$PROJECT_DIR$/.idea/VP_HCI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/first_steps/first_steps.iml" filepath="$PROJECT_DIR$/first_steps/first_steps.iml" />
+    </modules>
+  </component>
+</project>
