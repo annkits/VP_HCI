@@ -1,0 +1,11 @@
+.idea/
+*.iml
+
+out/
+build/
+
+.gradle/
+build.gradle.kts.local
+
+*.log
+*.tmp
