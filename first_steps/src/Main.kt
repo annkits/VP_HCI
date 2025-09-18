@@ -1,6 +1,6 @@
 import kotlin.random.Random
 
-class Human{
+open class Human{
     var name: String = ""
     var surname: String = ""
     var second_name: String = ""
@@ -20,7 +20,7 @@ class Human{
         println("We created the Human object with name: $name")
     }
 
-    fun move() {
+    open fun move() {
         val direction = Random.nextInt(4)
         when (direction) {
             0 -> y -= speed
@@ -31,30 +31,50 @@ class Human{
     }
 }
 
+class Driver : Human {
+    constructor(_name: String, _surname: String, _second: String, _age: Int) : super(_name, _surname, _second, _age) {
+        println("We created the Driver object with name: $name")
+    }
+
+    override fun move() {
+        x += speed
+    }
+}
+
 fun main(){
 
     val humans = arrayOf(
         Human("Павел", "Нейдорф", "Яковлевич", 21),
         Human("Ольга", "Моренкова", "Ильинична", 55),
-        Human("Руслан ", "Ахпашев", "Владимирович", 30),
-        Human("Татьяна", "Храмова", "Викторовна", 35),
-        Human("Антон", "Сибирцев", "Владимирович", 31),
-        Human("Павел", "Солодов", "Сергеевич", 32),
-        Human("Лариса", "Рогулина", "Геннадьевна", 46),
-        Human("Андрей", "Андреев", "Валерьевич", 33),
-        Human("Елена", "Янченко", "Викторовна", 34),
-        Human("Егор", "Сибиряков", "Борисович", 48),
         Human("Александр", "Лошкарев", "Васильевич", 36),
     )
+
+    val driver = Driver("Демьян", "Мастинин", "Валерьевич", 22)
 
     val simulationTime = 5
 
     for (time in 1..simulationTime) {
         println("Время: $time сек")
-        humans.forEach {
-            human -> human.move()
-            println("${human.name}: позиция (${human.x}, ${human.y}), возраст ${human.age}, скорость ${human.speed}")
+        val threads = mutableListOf<Thread>()
+
+        humans.forEach { human ->
+            val thread = Thread {
+                human.move()
+                println("${human.name}: позиция (${human.x}, ${human.y}), возраст ${human.age}, скорость ${human.speed}")
+            }
+            threads.add(thread)
+            thread.start()
         }
-        println("------------------")
+
+        val driverThread = Thread {
+            driver.move()
+            println("${driver.name} (Driver): позиция (${driver.x}, ${driver.y}), возраст ${driver.age}, скорость ${driver.speed}")
+        }
+        threads.add(driverThread)
+        driverThread.start()
+
+        threads.forEach { it.join() }
+        println("-------------------")
+        Thread.sleep(1000)
     }
 }
