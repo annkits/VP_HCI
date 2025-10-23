@@ -20,4 +20,7 @@
     <string name="button_equals">=</string>
     <string name="button_delete">⌫</string>
     <string name="app_name">My Application</string>
+
+    <string name="hub_title">Activity Hub</string>
+    <string name="go_to_calculator">Go to Calculator</string>
 </resources>

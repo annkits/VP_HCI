@@ -5,206 +5,29 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.calculator.MainActivity">
-
-    <LinearLayout
-        android:id="@+id/row5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:gravity="end"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/resultTextView"
-        tools:layout_editor_absoluteX="0dp">
-
-        <Button
-            android:id="@+id/buttonDelete"
-            android:layout_width="128dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_delete"
-            android:textSize="15sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/row2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/row3"
-        tools:layout_editor_absoluteX="0dp">
-
-
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_1"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_2"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_3"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/buttonMinus"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_minus"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/row4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/row5"
-        tools:layout_editor_absoluteX="0dp">
-
-        <Button
-            android:id="@+id/button7"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_7"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/button8"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_8"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/button9"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_9"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/buttonDivide"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_divide"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/row1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="end"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/row2"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp">
-
-        <Button
-            android:id="@+id/button0"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_0"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/buttonEquals"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_equals"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/buttonPlus"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_plus"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/row3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/row4"
-        tools:layout_editor_absoluteX="0dp">
-
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_4"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_5"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/button6"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_6"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/buttonMultiply"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_multiply"
-            android:textSize="20sp" />
-    </LinearLayout>
+    tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/resultTextView"
-        android:layout_width="wrap_content"
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:text="@string/initial_result"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/hub_title"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.919"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonCalculator"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/go_to_calculator"
+        android:textSize="18sp"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

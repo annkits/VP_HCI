@@ -1,4 +1,4 @@
-package com.example.calculator
+package com.example.myapplication
 
 import android.graphics.Color
 import android.os.Bundle
@@ -13,11 +13,11 @@ import kotlin.collections.iterator
 import kotlin.random.Random
 import kotlin.text.iterator
 
-class MainActivity : AppCompatActivity() {
+class CalculatorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_calculator)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
