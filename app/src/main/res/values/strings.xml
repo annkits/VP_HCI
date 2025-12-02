@@ -23,4 +23,8 @@
 
     <string name="hub_title">Activity Hub</string>
     <string name="go_to_calculator">Go to Calculator</string>
+    <string name="go_to_media_player">Go to Media Player</string>
+    <string name="go_to_location_activity">Go to Location Activity</string>
+
+    <string name="choose_song">Выберите песню</string>
 </resources>

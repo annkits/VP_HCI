@@ -8,10 +8,47 @@
     tools:context="com.example.myapplication.CalculatorActivity">
 
     <LinearLayout
+        android:id="@+id/row1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="end"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/back_to_main"
+        app:layout_constraintTop_toBottomOf="@id/row2"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="0dp">
+
+        <Button
+            android:id="@+id/button0"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="@string/button_0"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/buttonEquals"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="@string/button_equals"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/buttonPlus"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="@string/button_plus"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/row5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="4dp"
         android:gravity="end"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/resultTextView"
@@ -27,54 +64,10 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/row2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/row3"
-        tools:layout_editor_absoluteX="0dp">
-
-
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_1"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_2"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_3"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/buttonMinus"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_minus"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/row4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="4dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/row5"
@@ -114,47 +107,10 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/row1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="end"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/row2"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp">
-
-        <Button
-            android:id="@+id/button0"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_0"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/buttonEquals"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_equals"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/buttonPlus"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="@string/button_plus"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/row3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/row4"
@@ -193,6 +149,50 @@
             android:textSize="20sp" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/row2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/row3"
+        tools:layout_editor_absoluteX="0dp">
+
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="@string/button_1"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="@string/button_2"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="@string/button_3"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/buttonMinus"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="@string/button_minus"
+            android:textSize="20sp" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/resultTextView"
         android:layout_width="wrap_content"
@@ -206,5 +206,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.2" />
+
+    <Button
+        android:id="@+id/back_to_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:text="Вернуться в меню"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

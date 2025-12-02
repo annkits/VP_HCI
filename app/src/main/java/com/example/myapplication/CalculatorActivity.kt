@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.Button
@@ -8,10 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.myapplication.R
-import kotlin.collections.iterator
 import kotlin.random.Random
-import kotlin.text.iterator
 
 class CalculatorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +21,13 @@ class CalculatorActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        val bBackToMain = findViewById<Button>(R.id.back_to_main)
+
+        bBackToMain.setOnClickListener{
+            val backToMain = Intent(this, MainActivity::class.java)
+            startActivity(backToMain)
+        }
+
         val resultTextView = findViewById<TextView>(R.id.resultTextView)
         var currentInput = ""
 
