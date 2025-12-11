@@ -27,4 +27,5 @@
     <string name="go_to_location_activity">Go to Location Activity</string>
 
     <string name="choose_song">Выберите песню</string>
+    <string name="go_to_sockets_activity">Go to Sockets Activity</string>
 </resources>
