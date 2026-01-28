@@ -34,7 +34,7 @@ class LocationActivity : AppCompatActivity() {
 
     val value: Int = 0
     val LOG_TAG: String = "LOCATION_ACTIVITY"
-    private lateinit var bBackToMain: Button
+    private lateinit var buttonBackToMain: Button
 
     companion object {
         private const val PERMISSION_REQUEST_ACCESS_LOCATION= 100
@@ -58,7 +58,7 @@ class LocationActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        bBackToMain = findViewById<Button>(R.id.back_to_main)
+        buttonBackToMain = findViewById<Button>(R.id.back_to_main)
 
         myFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -72,7 +72,7 @@ class LocationActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        bBackToMain.setOnClickListener{
+        buttonBackToMain.setOnClickListener{
             val backToMain = Intent(this, MainActivity::class.java)
             startActivity(backToMain)
         }
@@ -112,7 +112,6 @@ class LocationActivity : AppCompatActivity() {
                 }
 
             } else{
-                // open settings to enable location
                 Toast.makeText(applicationContext, "Enable location in settings", Toast.LENGTH_SHORT).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
@@ -153,7 +152,6 @@ class LocationActivity : AppCompatActivity() {
                 }
 
             } else{
-                // open settings to enable location
                 Toast.makeText(applicationContext, "Enable location in settings", Toast.LENGTH_SHORT).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
