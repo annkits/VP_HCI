@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import org.json.JSONArray
 import org.json.JSONObject
 import org.zeromq.SocketType
 import org.zeromq.ZContext
@@ -26,7 +27,13 @@ class SocketsActivity : AppCompatActivity() {
     private lateinit var bBackToMain: Button
 
 
-    private val pcIp = "10.0.2.2"
+    private val pcIp = "172.20.10.12"
+    private val port = 6000
+
+    private val context = ZContext()
+    private var socket: ZMQ.Socket? = null
+    private var isConnecting = false
+    private var isConnected = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,45 +65,102 @@ class SocketsActivity : AppCompatActivity() {
             val json = readLocationJson()
             sendToServer(json)
         }
-        appendLog("Запуск клиента -> ПК ($pcIp:6000)")
+        appendLog("Запуск клиента -> ПК ($pcIp:$port)")
+
     }
 
     private fun readLocationJson(): String {
         val file = File(filesDir, "location.json")
-        var jsonString: String
 
-        if (!file.exists() || file.length().toInt() == 0) {
-            val jsonObject = JSONObject()
-            jsonObject.put("error", "no_data")
-            jsonObject.put("message", "Файл location.json пуст или не существует")
-            jsonString = jsonObject.toString()
-        } else { jsonString = file.readText() }
-
-        return jsonString
+        val jsonString = file.readText()
+        try {
+            val jsonArray = JSONArray(jsonString)
+            if (jsonArray.length() == 0) {
+                return JSONObject().put("error", "empty_array").toString()
+            }
+            val lastObject = jsonArray.getJSONObject(jsonArray.length() - 1)
+            return lastObject.toString()
+        } catch (e: Exception) {
+            return jsonString
+        }
     }
 
     private fun sendToServer(message: String) {
         Thread {
-            ZContext().use { context ->
-                context.createSocket(SocketType.REQ).use { socket ->
-                    try {
-                        socket.connect("tcp://$pcIp:6000")
-                        Thread.sleep(200)
-                        appendLog("Подключено к серверу")
-
-                        socket.send(message.toByteArray(ZMQ.CHARSET), 0)
-                        appendLog("Отправлено: $message")
-
-                        val reply = socket.recv(0)
-                        val replyText = String(reply, ZMQ.CHARSET)
-                        appendLog("Ответ от сервера: $replyText")
-
-                    } catch (e: Exception) {
-                        appendLog("Ошибка: ${e.message}")
-                    }
+            try {
+                if (!isConnected) {
+                    connectIfNeeded()
+                    Thread.sleep(800)
                 }
+
+                val sock = socket
+                if (sock != null) {
+                    val success = sock.send(message.toByteArray(ZMQ.CHARSET), 0)
+                    if (!success) {
+                        appendLog("Ошибка отправки")
+                        socket?.close()
+                    }
+                    appendLog("Отправлено: $message")
+
+                    val reply = sock.recv(0)
+                    if (reply == null) {
+                        appendLog("Таймаут: сервер не ответил")
+                        socket?.close()
+                    }
+                    val replyText = String(reply, ZMQ.CHARSET)
+                    appendLog("Ответ от сервера: $replyText")
+                } else {
+                    appendLog("Сокет не создан")
+                    isConnected = false
+                }
+
+            } catch (e: Exception) {
+                appendLog("Ошибка: ${e.message}")
+                socket?.close()
+                isConnected = false
+                connectIfNeeded()
             }
         }.start()
+    }
+
+    private fun connectIfNeeded() {
+        if (isConnecting || isConnected) {
+            return
+        }
+
+        isConnecting = true
+
+        Thread {
+            try {
+                appendLog("Подключение к tcp://$pcIp:$port...")
+
+                val newSocket = context.createSocket(SocketType.REQ)
+                newSocket.sendTimeOut = 2500
+                newSocket.receiveTimeOut = 2500
+                newSocket.connect("tcp://$pcIp:$port")
+
+                socket?.close()
+                socket = newSocket
+                isConnected = true
+
+                appendLog("Подключено")
+            } catch (e: Exception) {
+                appendLog("Ошибка: ${e.message}")
+                isConnected = false
+                Thread.sleep(2000)
+            } finally {
+                isConnecting = false
+            }
+        }.start()
+
+
+    }
+
+    override fun onDestroy() {
+        socket?.close()
+        context.close()
+        isConnected = false
+        super.onDestroy()
     }
 
     private fun appendLog(text: String) {
