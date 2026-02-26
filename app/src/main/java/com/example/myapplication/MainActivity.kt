@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonLocationActivity: Button
 
     private lateinit var buttonSocketsActivity: Button
+    private lateinit var buttonTelephonyActivity: Button
 
 
     @SuppressLint("MissingInflatedId")
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         buttonMediaPlayer = findViewById<Button>(R.id.buttonMediaPlayer)
         buttonLocationActivity = findViewById<Button>(R.id.buttonLocationActivity)
         buttonSocketsActivity = findViewById<Button>(R.id.buttonSocketsActivity)
+        buttonTelephonyActivity = findViewById<Button>(R.id.buttonTelephonyActivity)
     }
 
     override fun onResume() {
@@ -55,6 +57,11 @@ class MainActivity : AppCompatActivity() {
 
         buttonSocketsActivity.setOnClickListener {
             val intent = Intent(this, SocketsActivity::class.java)
+            startActivity(intent)
+        }
+
+        buttonTelephonyActivity.setOnClickListener {
+            val intent = Intent(this, TelephonyActivity::class.java)
             startActivity(intent)
         }
     }

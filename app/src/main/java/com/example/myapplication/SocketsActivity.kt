@@ -27,7 +27,7 @@ class SocketsActivity : AppCompatActivity() {
     private lateinit var bBackToMain: Button
 
 
-    private val pcIp = "172.20.10.12"
+    private val pcIp = "172.20.225.212"
     private val port = 6000
 
     private val context = ZContext()
@@ -62,27 +62,37 @@ class SocketsActivity : AppCompatActivity() {
 
         btnSendLocationToPC.setOnClickListener {
             clearLog()
-            val json = readLocationJson()
+            val json = readJson()
             sendToServer(json)
         }
         appendLog("Запуск клиента -> ПК ($pcIp:$port)")
 
     }
 
-    private fun readLocationJson(): String {
-        val file = File(filesDir, "location.json")
+    private fun readJson(): String {
+        val locFile = File(filesDir, "location.json")
+        val locJson = if (locFile.exists()) {
+            locFile.readText()
+        } else "[]"
+        val locArray = JSONArray(locJson)
+        val lastLoc = if (locArray.length() > 0) {
+            locArray.getJSONObject(locArray.length() - 1)
+        } else JSONObject()
 
-        val jsonString = file.readText()
-        try {
-            val jsonArray = JSONArray(jsonString)
-            if (jsonArray.length() == 0) {
-                return JSONObject().put("error", "empty_array").toString()
-            }
-            val lastObject = jsonArray.getJSONObject(jsonArray.length() - 1)
-            return lastObject.toString()
-        } catch (e: Exception) {
-            return jsonString
-        }
+        val telFile = File(filesDir, "telephony.json")
+        val telJson = if (telFile.exists()) {
+            telFile.readText()
+        } else "[]"
+        val telArray = JSONArray(telJson)
+        val lastTel = if (telArray.length() > 0) {
+            telArray.getJSONObject(telArray.length() - 1)
+        } else JSONObject()
+
+        val combined = JSONObject()
+        combined.put("location", lastLoc)
+        combined.put("telephony", lastTel)
+
+        return combined.toString(2)
     }
 
     private fun sendToServer(message: String) {

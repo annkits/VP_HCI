@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Отправить location-message на ПК"
+        android:text="Отправить data-message на ПК"
         app:layout_constraintTop_toBottomOf="@id/btn_send_hello_to_pc" />
 
     <ScrollView

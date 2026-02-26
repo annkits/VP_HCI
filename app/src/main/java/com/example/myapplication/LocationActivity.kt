@@ -45,6 +45,7 @@ class LocationActivity : AppCompatActivity() {
     private lateinit var tvLongitude: TextView
     private lateinit var tvAltitude: TextView
     private lateinit var tvTime: TextView
+    private lateinit var tvAccuracy: TextView
     private lateinit var buttonGetLocation: Button
 
     private val cancellationTokenSource = CancellationTokenSource()
@@ -66,6 +67,7 @@ class LocationActivity : AppCompatActivity() {
         tvLongitude = findViewById<TextView>(R.id.tvLongitude)
         tvAltitude = findViewById<TextView>(R.id.tvAltitude)
         tvTime = findViewById<TextView>(R.id.tvTime)
+        tvAccuracy = findViewById<TextView>(R.id.tvAccuracy)
         buttonGetLocation = findViewById<Button>(R.id.buttonGetLocation)
     }
 
@@ -106,6 +108,7 @@ class LocationActivity : AppCompatActivity() {
                         tvLatitude.setText(location.latitude.toString())
                         tvLongitude.setText(location.longitude.toString())
                         tvAltitude.setText(location.altitude.toString())
+                        tvAccuracy.setText(location.accuracy.toString())
                         tvTime.text = formatLocationTime(location.time)
                         saveLocation(location)
                     }
@@ -146,6 +149,7 @@ class LocationActivity : AppCompatActivity() {
                         tvLatitude.setText(location.latitude.toString())
                         tvLongitude.setText(location.longitude.toString())
                         tvAltitude.setText(location.altitude.toString())
+                        tvAccuracy.setText(location.accuracy.toString())
                         tvTime.text = formatLocationTime(location.time)
                         saveLocation(location)
                     }
@@ -182,6 +186,7 @@ class LocationActivity : AppCompatActivity() {
         jsonObject.put("latitude", location.latitude)
         jsonObject.put("longitude", location.longitude)
         jsonObject.put("altitude", location.altitude)
+        jsonObject.put("accuracy", location.accuracy)
         jsonObject.put("time", location.time)
 
         jsonArray.put(jsonObject)
