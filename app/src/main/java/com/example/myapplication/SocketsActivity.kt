@@ -16,6 +16,8 @@ import org.zeromq.SocketType
 import org.zeromq.ZContext
 import org.zeromq.ZMQ
 import java.io.File
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 
 class SocketsActivity : AppCompatActivity() {
 
@@ -31,9 +33,9 @@ class SocketsActivity : AppCompatActivity() {
     private val port = 6000
 
     private val context = ZContext()
-    private var socket: ZMQ.Socket? = null
-    private var isConnecting = false
-    private var isConnected = false
+    private val sendQueue = LinkedBlockingQueue<String>(32)
+    private var workerThread: Thread? = null
+    private var isActivityAlive = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +68,7 @@ class SocketsActivity : AppCompatActivity() {
             sendToServer(json)
         }
         appendLog("Запуск клиента -> ПК ($pcIp:$port)")
-
+        startWorker()
     }
 
     private fun readJson(): String {
@@ -95,81 +97,67 @@ class SocketsActivity : AppCompatActivity() {
         return combined.toString(2)
     }
 
-    private fun sendToServer(message: String) {
-        Thread {
-            try {
-                if (!isConnected) {
-                    connectIfNeeded()
-                    Thread.sleep(800)
-                }
+    private fun startWorker() {
+        workerThread = Thread {
+            var socket: ZMQ.Socket? = null
 
-                val sock = socket
-                if (sock != null) {
-                    val success = sock.send(message.toByteArray(ZMQ.CHARSET), 0)
+            while (isActivityAlive) {
+                try {
+                    if (socket == null) {
+                        appendLog("-> Подключение к tcp://$pcIp:$port...")
+                        socket = context.createSocket(SocketType.REQ)
+                        socket.sendTimeOut = 2500
+                        socket.receiveTimeOut = 3500
+                        socket.connect("tcp://$pcIp:$port")
+                        appendLog("-> Подключено")
+                    }
+
+                    val message = sendQueue.poll(2, TimeUnit.SECONDS) ?: continue
+
+                    val success = socket.send(message.toByteArray(ZMQ.CHARSET), 0)
                     if (!success) {
-                        appendLog("Ошибка отправки")
-                        socket?.close()
+                        appendLog("Ошибка отправки сообщения")
+                        socket.close()
+                        socket = null
+                        continue
                     }
-                    appendLog("Отправлено: $message")
 
-                    val reply = sock.recv(0)
+                    appendLog("-> Отправлено: $message")
+
+                    val reply = socket.recv(0)
                     if (reply == null) {
-                        appendLog("Таймаут: сервер не ответил")
-                        socket?.close()
+                        appendLog("Сервер не ответил")
+                        socket.close()
+                        socket = null
+                        continue
                     }
-                    val replyText = String(reply, ZMQ.CHARSET)
-                    appendLog("Ответ от сервера: $replyText")
-                } else {
-                    appendLog("Сокет не создан")
-                    isConnected = false
-                }
 
-            } catch (e: Exception) {
-                appendLog("Ошибка: ${e.message}")
-                socket?.close()
-                isConnected = false
-                connectIfNeeded()
+                    appendLog("-> Получено: ${String(reply, ZMQ.CHARSET)}")
+
+                } catch (e: Exception) {
+                    appendLog("Ошибка: ${e.message}")
+                    socket?.close()
+                    socket = null
+                    Thread.sleep(1500)
+                }
             }
-        }.start()
+            socket?.close()
+            appendLog("Завершение клиента")
+        }.apply { isDaemon = true; start()}
     }
 
-    private fun connectIfNeeded() {
-        if (isConnecting || isConnected) {
-            return
+    private fun sendToServer(message: String) {
+        if (!sendQueue.offer(message)) {
+            appendLog("Очередь переполнена - сообщение отброшено")
+        } else {
+            appendLog("Сообщение добавлено в очередь")
         }
-
-        isConnecting = true
-
-        Thread {
-            try {
-                appendLog("Подключение к tcp://$pcIp:$port...")
-
-                val newSocket = context.createSocket(SocketType.REQ)
-                newSocket.sendTimeOut = 2500
-                newSocket.receiveTimeOut = 2500
-                newSocket.connect("tcp://$pcIp:$port")
-
-                socket?.close()
-                socket = newSocket
-                isConnected = true
-
-                appendLog("Подключено")
-            } catch (e: Exception) {
-                appendLog("Ошибка: ${e.message}")
-                isConnected = false
-                Thread.sleep(2000)
-            } finally {
-                isConnecting = false
-            }
-        }.start()
-
-
     }
 
     override fun onDestroy() {
-        socket?.close()
+        isActivityAlive = false
+        workerThread?.interrupt()
         context.close()
-        isConnected = false
         super.onDestroy()
     }
 
