@@ -25,6 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".TelephonyActivity"
+            android:exported="false" />
+        <activity
             android:name=".SocketsActivity"
             android:exported="false" />
         <activity
