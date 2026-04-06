@@ -37,7 +37,7 @@ class LocationActivity : AppCompatActivity() {
     private lateinit var buttonBackToMain: Button
 
     companion object {
-        private const val PERMISSION_REQUEST_ACCESS_LOCATION= 100
+        const val PERMISSION_REQUEST_ACCESS_LOCATION= 100
     }
 
     private lateinit var myFusedLocationProviderClient: FusedLocationProviderClient
@@ -120,7 +120,7 @@ class LocationActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         } else {
-            Log.w(LOG_TAG, "location permission is not allowed");
+            Log.w(LOG_TAG, "location permission is not allowed")
             tvLatitude.setText("Permission is not granted")
             tvLongitude.setText("Permission is not granted")
             requestPermissions()
@@ -161,7 +161,7 @@ class LocationActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         } else {
-            Log.w(LOG_TAG, "location permission is not allowed");
+            Log.w(LOG_TAG, "location permission is not allowed")
             tvLatitude.setText("Permission is not granted")
             tvLongitude.setText("Permission is not granted")
             requestPermissions()

@@ -57,6 +57,17 @@ class TelephonyActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            tvInfo.text = "Эта функция доступна только на Android 12+"
+            return
+        }
+
+        if (!hasRequiredPermissions()) {
+            tvInfo.text = "Нет нужных разрешений"
+            requestPermissions()
+            return
+        }
+
         getInfo()
 
         buttonBackToMain.setOnClickListener{
@@ -67,6 +78,22 @@ class TelephonyActivity : AppCompatActivity() {
         buttonGetInfo.setOnClickListener{
             getInfo()
         }
+    }
+
+    private fun hasRequiredPermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.READ_PHONE_STATE
+            ),
+            1
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
