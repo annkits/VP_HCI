@@ -1,62 +1,124 @@
-Короткова Анна, ИКС-433
+# Backend + Android приложение для сбора данных о сотовой связи и местоположении
 
-# Android Multi-App
+Учебный проект, состоящий из Android-приложения и C++ backend-сервера с графическим интерфейсом.
 
-Проект создан в рамках обучения работе с Android Studio и Kotlin.
+## Описание проекта
 
-## Calculator App
+Приложение собирает данные о местоположении устройства и информации о ближайших сотовых вышках (LTE, GSM, NR), передаёт их по протоколу ZeroMQ на сервер.  
+Сервер сохраняет данные в базу PostgreSQL, отображает текущую информацию и строит графики изменения уровня сигнала в реальном времени.
 
-Это простое приложение-калькулятор, разработанное для выполнения базовых математических операций с целыми числами.
+## Возможности
 
-Приложение позволяет вводить числа и операции через кнопки интерфейса, а затем вычислять результат. Оно поддерживает следующие операции: сложение, вычитание, умножение и деление. Результат отображается на экране после нажатия кнопки "=".
+### Android-приложение (https://github.com/annkits/VP_HCI.git)
 
-## Music Player
+- **Сбор данных в фоне** через foreground-сервис (`DataCollectorService`)
+- Получение координат (GPS + сеть)
+- Получение информации о сотовых вышках:
+  - LTE (4G): RSRP, RSRQ, RSSNR, dBm, PCI, CI, TAC и др.
+  - GSM (2G): RSSI (dBm), LAC, CID
+  - NR (5G): ssRSRP, ssRSRQ, ssSINR, PCI, NCI
+- Сохранение данных в JSON-файлы (`location.json`, `telephony.json`)
+- Передача данных на сервер по ZeroMQ (TCP)
+- Отдельные экраны:
+  - Калькулятор
+  - Музыкальный плеер
+  - Просмотр текущего местоположения
+  - Просмотр информации о сотовых вышках
+  - Тестирование сокетов
 
-Реализация музыкального плеера. Список файлов считываетс из папки "Music" на устройстве, выводит в ListView на экран. Для навигации есть play/pause, след./пред. трек, прогресс-бар с перемоткой.
+### Backend (C++) (https://github.com/annkits/android-server-lab.git)
 
-## Location App
+- Приём данных по ZeroMQ (порт 6000)
+- Парсинг JSON от Android
+- Сохранение данных в базу **PostgreSQL**
+- Хранение истории пакетов в памяти
+- Графический интерфейс на **Dear ImGui + ImPlot**:
+  - Отображение текущего местоположения
+  - Отображение информации о всех видимых вышках
+  - **Три графика в реальном времени**:
+    - RSRP (Reference Signal Received Power)
+    - dBm / RSSI (общая мощность сигнала)
+    - SINR (Signal to Interference plus Noise Ratio)
+- Поддержка нескольких сот одновременно (разные цвета линий по PCI)
+- Обработка сигналов завершения (Ctrl+C)
 
-Базовая активность, позволяющая получать текущее местоположение по кнопке "Получить местоположение". Полученные данные выводятся на экран и записываются в locations.json
+## Структура проекта
+```
+android-server-lab/
+├── src/                    # C++ исходники
+│   ├── main.cpp
+│   ├── server.cpp
+│   ├── gui.cpp
+│   └── shared.h
+├── CMakeLists.txt
+├── third_party/            # ImGui, ImPlot
+├── assets/fonts/           # JetBrains Mono
+│
+└── Android-приложение/
+├── app/src/main/java/com/example/myapplication/
+│   ├── MainActivity.kt
+│   ├── CalculatorActivity.kt
+│   ├── MusicPlayerActivity.kt
+│   ├── LocationActivity.kt
+│   ├── TelephonyActivity.kt
+│   ├── SocketsActivity.kt
+│   └── DataCollectorService.kt
+└── ...
+```
 
-## Server-Client App
 
-ZeroMQ (ZMQ) для сетевого взаимодействия. REQ-REP паттерн (запрос-ответ).
+## Технологии
 
-Реализует две опции: отправка hello-messsage и отправка location-message на сервер (ПК). При отправлении location-message происходит чтение JSON из файла location.json в локальном хранилище и его отправление.
+**Backend:**
+- C++20
+- ZeroMQ (libzmq)
+- nlohmann/json
+- libpq (PostgreSQL)
+- Dear ImGui + ImPlot
+- SDL2 + OpenGL
 
-## Movable repo
+**Android:**
+- Kotlin
+- ZeroMQ (org.zeromq:jeromq)
+- Google Play Services Location
+- TelephonyManager
 
-### Описание
+**База данных:**
+- PostgreSQL
 
-Программа моделирует движение объектов Human и Driver. Human использует Random Walk (случайное движение), а Driver движется прямолинейно (вправо). Движение выполняется параллельно с использованием Thread.
+## Как запустить
 
-### Структура файлов
+### 1. Backend
 
-- Movable.kt: Интерфейс Movable, определяет свойства x (координата X), y (координата Y), speed (скорость) и метод move() для реализации движения.
-- Human.kt: Класс Human, реализует Movable. Свойства: name, surname, second_name (ФИО), age (возраст), x, y, speed. Метод move() реализует Random Walk.
-- Driver.kt: Класс Driver, наследует Human. Переопределяет move() для прямолинейного движения вправо.
-- Main.kt: Функция main(), создает 3 объекта Human и 1 объект Driver, выполняет симуляцию с параллельным движением через Thread, выводит результаты.
+```bash
+sudo apt install libzmq3-dev libpq-dev libsdl2-dev libglew-dev
 
-### Модель движения: Random Walk (для Human)
+mkdir build && cd build
+cmake ..
+make -j4
 
-- Человек выбирает случайное направление: вниз (0), влево (1), вверх (2), вправо (3).
-- Шаг равен speed.
+./backend
+```
 
-#### Формулы
+### 2. Android-приложение
 
-Пусть текущая позиция в момент t: $`(X_t, Y_t)`$.
+- Открыть проект в Android Studio
+- Запустить на устройстве или эмуляторе (Android 12+ рекомендуется)
+- Разрешить все необходимые разрешения
 
-На шаге t+1 позиция обновляется как:
-- Выбирается случайное направление d из {0, 1, 2, 3}, где:
-    - d=0: $` X_{t+1} = X_t `$, $` Y_{t+1} = Y_t - speed `$
-    - d=1: $` X_{t+1} = X_t - speed `$, $` Y_{t+1} = Y_t `$
-    - d=2: $` X_{t+1} = X_t`$, $` Y_{t+1} = Y_t + speed `$
-    - d=3: $` X_{t+1} = X_t + speed `$, $` Y_{t+1} = Y_t `$
+### 3. База данных
 
-### Модель движения (для Driver)
+```
+createdb telecom_data
+psql -d telecom_data -c "CREATE USER postgres WITH PASSWORD 'telecom_pass';"
+```
+(или изменить пароль в server.cpp в функции init_database())
 
-- Прямолинейное движение вправо.
+## Что отображается в GUI
 
-#### Формула
-
-$` ( X_{t+1} = X_t + speed ), ( Y_{t+1} = Y_t ) `$
+- Текущее местоположение (широта, долгота, высота, точность)
+- Список всех видимых сотовых вышек с детальной информацией
+- Три графика в реальном времени:
+    - RSRP — качество reference-сигнала
+    - dBm — общая мощность сигнала
+    - SINR — отношение сигнал/шум

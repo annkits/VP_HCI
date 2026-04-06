@@ -10,11 +10,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import org.json.JSONArray
 import org.json.JSONObject
 import org.zeromq.SocketType
 import org.zeromq.ZContext
 import org.zeromq.ZMQ
 import java.io.File
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 
 class SocketsActivity : AppCompatActivity() {
 
@@ -26,7 +29,13 @@ class SocketsActivity : AppCompatActivity() {
     private lateinit var bBackToMain: Button
 
 
-    private val pcIp = "10.0.2.2"
+    private val pcIp = "172.20.225.212"
+    private val port = 6000
+
+    private val context = ZContext()
+    private val sendQueue = LinkedBlockingQueue<String>(32)
+    private var workerThread: Thread? = null
+    private var isActivityAlive = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,48 +64,101 @@ class SocketsActivity : AppCompatActivity() {
 
         btnSendLocationToPC.setOnClickListener {
             clearLog()
-            val json = readLocationJson()
+            val json = readJson()
             sendToServer(json)
         }
-        appendLog("Запуск клиента -> ПК ($pcIp:6000)")
+        appendLog("Запуск клиента -> ПК ($pcIp:$port)")
+        startWorker()
     }
 
-    private fun readLocationJson(): String {
-        val file = File(filesDir, "location.json")
-        var jsonString: String
+    private fun readJson(): String {
+        val locFile = File(filesDir, "location.json")
+        val locJson = if (locFile.exists()) {
+            locFile.readText()
+        } else "[]"
+        val locArray = JSONArray(locJson)
+        val lastLoc = if (locArray.length() > 0) {
+            locArray.getJSONObject(locArray.length() - 1)
+        } else JSONObject()
 
-        if (!file.exists() || file.length().toInt() == 0) {
-            val jsonObject = JSONObject()
-            jsonObject.put("error", "no_data")
-            jsonObject.put("message", "Файл location.json пуст или не существует")
-            jsonString = jsonObject.toString()
-        } else { jsonString = file.readText() }
+        val telFile = File(filesDir, "telephony.json")
+        val telJson = if (telFile.exists()) {
+            telFile.readText()
+        } else "[]"
+        val telArray = JSONArray(telJson)
+        val lastTel = if (telArray.length() > 0) {
+            telArray.getJSONObject(telArray.length() - 1)
+        } else JSONObject()
 
-        return jsonString
+        val combined = JSONObject()
+        combined.put("location", lastLoc)
+        combined.put("telephony", lastTel)
+
+        return combined.toString(2)
+    }
+
+    private fun startWorker() {
+        workerThread = Thread {
+            var socket: ZMQ.Socket? = null
+
+            while (isActivityAlive) {
+                try {
+                    if (socket == null) {
+                        appendLog("-> Подключение к tcp://$pcIp:$port...")
+                        socket = context.createSocket(SocketType.REQ)
+                        socket.sendTimeOut = 2500
+                        socket.receiveTimeOut = 3500
+                        socket.connect("tcp://$pcIp:$port")
+                        appendLog("-> Подключено")
+                    }
+
+                    val message = sendQueue.poll(2, TimeUnit.SECONDS) ?: continue
+
+                    val success = socket.send(message.toByteArray(ZMQ.CHARSET), 0)
+                    if (!success) {
+                        appendLog("Ошибка отправки сообщения")
+                        socket.close()
+                        socket = null
+                        continue
+                    }
+
+                    appendLog("-> Отправлено: $message")
+
+                    val reply = socket.recv(0)
+                    if (reply == null) {
+                        appendLog("Сервер не ответил")
+                        socket.close()
+                        socket = null
+                        continue
+                    }
+
+                    appendLog("-> Получено: ${String(reply, ZMQ.CHARSET)}")
+
+                } catch (e: Exception) {
+                    appendLog("Ошибка: ${e.message}")
+                    socket?.close()
+                    socket = null
+                    Thread.sleep(1500)
+                }
+            }
+            socket?.close()
+            appendLog("Завершение клиента")
+        }.apply { isDaemon = true; start()}
     }
 
     private fun sendToServer(message: String) {
-        Thread {
-            ZContext().use { context ->
-                context.createSocket(SocketType.REQ).use { socket ->
-                    try {
-                        socket.connect("tcp://$pcIp:6000")
-                        Thread.sleep(200)
-                        appendLog("Подключено к серверу")
+        if (!sendQueue.offer(message)) {
+            appendLog("Очередь переполнена - сообщение отброшено")
+        } else {
+            appendLog("Сообщение добавлено в очередь")
+        }
+    }
 
-                        socket.send(message.toByteArray(ZMQ.CHARSET), 0)
-                        appendLog("Отправлено: $message")
-
-                        val reply = socket.recv(0)
-                        val replyText = String(reply, ZMQ.CHARSET)
-                        appendLog("Ответ от сервера: $replyText")
-
-                    } catch (e: Exception) {
-                        appendLog("Ошибка: ${e.message}")
-                    }
-                }
-            }
-        }.start()
+    override fun onDestroy() {
+        isActivityAlive = false
+        workerThread?.interrupt()
+        context.close()
+        super.onDestroy()
     }
 
     private fun appendLog(text: String) {
