@@ -50,6 +50,10 @@ android-server-lab/
 │   ├── server.cpp
 │   ├── gui.cpp
 │   └── shared.h
+├── include/                    
+│   ├── json.hpp
+│   ├── zmq.hpp
+│   └── shared.h
 ├── CMakeLists.txt
 ├── third_party/            # ImGui, ImPlot
 ├── assets/fonts/           # JetBrains Mono
@@ -65,7 +69,6 @@ android-server-lab/
 │   └── DataCollectorService.kt
 └── ...
 ```
-
 
 ## Технологии
 
